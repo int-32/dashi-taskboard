@@ -223,6 +223,7 @@ async function copyApplicationResources() {
   await rm(resourcesDirectory, { recursive: true, force: true });
   await mkdir(appResources, { recursive: true });
   await Promise.all([
+    cp(path.join(projectRoot, "agents"), path.join(appResources, "agents"), { recursive: true }),
     cp(path.join(projectRoot, "server"), path.join(appResources, "server"), { recursive: true }),
     cp(path.join(projectRoot, "shared"), path.join(appResources, "shared"), { recursive: true }),
     cp(
