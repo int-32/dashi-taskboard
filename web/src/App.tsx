@@ -50,6 +50,7 @@ import {
   actorKey,
   actorForAssigneeTarget,
   assigneeTargetForActor,
+  configuredAgentNameForActor,
 } from "./actors";
 import { BoardColumn } from "./components/BoardColumn";
 import type { AiChatOpenThreadRequest } from "./components/AiChat";
@@ -3041,10 +3042,16 @@ export function App() {
         : codexProjectContext?.workspacePath
           ?? deviceWorkspacePaths[task.projectId]
           ?? taskboardProject?.workspacePath;
+    const assignedAgentName = configuredAgentNameForActor(task.assignee);
     const embeddedInstruction = text(
       `[$manage-taskboard](${manageTaskboardSkillPath}) 议题 ID：${task.identifier}`,
       `[$manage-taskboard](${manageTaskboardSkillPath}) Issue ID: ${task.identifier}`,
-    );
+    ) + (assignedAgentName
+      ? text(
+          `\n\n该议题已分配给已配置的 Taskboard Agent“${assignedAgentName}”。使用该 Agent 处理本次请求。`,
+          `\n\nThis issue is assigned to the configured Taskboard Agent "${assignedAgentName}". Use that Agent for this request.`,
+        )
+      : "");
 
     if (
       !projectless

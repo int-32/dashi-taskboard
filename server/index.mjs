@@ -2,10 +2,12 @@ import os from "node:os";
 import { pathToFileURL } from "node:url";
 
 import { createTaskboardServer, resolveHost, resolvePort } from "./app.mjs";
+import { installBuiltinAgents } from "./builtin-agents.mjs";
 
 export { createTaskboardServer, resolveHost, resolvePort, resolveServerOptions } from "./app.mjs";
 
 async function main() {
+  await installBuiltinAgents();
   const app = createTaskboardServer();
   const host = resolveHost();
   const listenFd = process.env.CODEX_TASKBOARD_LISTEN_FD === undefined
