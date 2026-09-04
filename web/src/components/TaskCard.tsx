@@ -13,7 +13,12 @@ import {
 } from "../types";
 import { labelPresentation } from "../labels";
 import { taskPriorityLabel, useTaskboardI18n } from "../i18n";
-import { CODEX_AGENT_ACTOR, actorKey, assigneeTargetForActor } from "../actors";
+import {
+  BUILTIN_AGENT_ACTORS,
+  CODEX_AGENT_ACTOR,
+  actorKey,
+  assigneeTargetForActor,
+} from "../actors";
 import type {
   TaskCardPresentation,
   TaskConversationItem,
@@ -359,7 +364,7 @@ function AssigneeControl({
   const participants = persistedParticipants.map((participant) => (
     actorKey(participant) === currentUserKey ? currentUser : participant
   ));
-  const options = [assignee, currentUser, CODEX_AGENT_ACTOR]
+  const options = [assignee, currentUser, CODEX_AGENT_ACTOR, ...BUILTIN_AGENT_ACTORS]
     .filter((actor, index, actors) => (
       actors.findIndex((candidate) => actorKey(candidate) === actorKey(actor)) === index
     ));

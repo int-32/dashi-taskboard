@@ -1431,11 +1431,27 @@ test("Codex-hosted user mutations persist the current account identity and avata
     avatarUrl: null,
   });
 
-  const assignedToUserResult = await request(baseUrl, `/api/tasks/${task.id}`, {
+  const assignedToConfiguredAgentResult = await request(baseUrl, `/api/tasks/${task.id}`, {
     method: "PATCH",
     headers: userHeaders,
     body: {
       version: assignedToCodexResult.body.task.version,
+      assigneeTarget: "configured-agent:需求规划师",
+    },
+  });
+  assert.equal(assignedToConfiguredAgentResult.response.status, 200);
+  assert.deepEqual(assignedToConfiguredAgentResult.body.task.assignee, {
+    type: "agent",
+    id: "configured-agent:需求规划师",
+    name: "需求规划师",
+    avatarUrl: null,
+  });
+
+  const assignedToUserResult = await request(baseUrl, `/api/tasks/${task.id}`, {
+    method: "PATCH",
+    headers: userHeaders,
+    body: {
+      version: assignedToConfiguredAgentResult.body.task.version,
       assigneeTarget: "current-user",
     },
   });

@@ -47,6 +47,7 @@ import type {
   TaskStatus,
 } from "../types";
 import {
+  BUILTIN_AGENT_ACTORS,
   CODEX_AGENT_ACTOR,
   actorKey,
   assigneeTargetForActor,
@@ -996,7 +997,7 @@ export function TaskDetail({
     && currentTask.assignee.id === currentUser.id
     ? currentUser
     : currentTask.assignee;
-  const assigneeOptions = [displayAssignee, currentUser, CODEX_AGENT_ACTOR]
+  const assigneeOptions = [displayAssignee, currentUser, CODEX_AGENT_ACTOR, ...BUILTIN_AGENT_ACTORS]
     .filter((actor, index, actors) => (
       actors.findIndex((candidate) => actorKey(candidate) === actorKey(actor)) === index
     ));

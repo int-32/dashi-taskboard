@@ -62,6 +62,7 @@ const CODEX_AGENT_ACTOR = {
   name: "Codex Agent",
   avatarUrl: null,
 };
+const CONFIGURED_AGENT_ASSIGNEE_PREFIX = "configured-agent:";
 const CONTENT_TYPES = new Map([
   [".css", "text/css; charset=utf-8"],
   [".html", "text/html; charset=utf-8"],
@@ -625,15 +626,33 @@ function actorFromRequest(request) {
 
 function parseAssigneeTarget(value) {
   if (value === undefined) return undefined;
-  if (value !== "current-user" && value !== "codex-agent") {
-    throw new ApiError(400, "INVALID_FIELD", "'assigneeTarget' must be current-user or codex-agent");
+  if (value === "current-user" || value === "codex-agent") return value;
+  if (typeof value === "string" && value.startsWith(CONFIGURED_AGENT_ASSIGNEE_PREFIX)) {
+    const name = stringField(
+      value.slice(CONFIGURED_AGENT_ASSIGNEE_PREFIX.length),
+      "assigneeTarget",
+      { required: true, maxLength: 120 },
+    );
+    return `${CONFIGURED_AGENT_ASSIGNEE_PREFIX}${name}`;
   }
-  return value;
+  throw new ApiError(
+    400,
+    "INVALID_FIELD",
+    "'assigneeTarget' must be current-user, codex-agent, or a configured-agent target",
+  );
 }
 
 function resolveAssignee(target, actor) {
   if (target === undefined) return actor;
   if (target === "codex-agent") return CODEX_AGENT_ACTOR;
+  if (target.startsWith(CONFIGURED_AGENT_ASSIGNEE_PREFIX)) {
+    return {
+      type: "agent",
+      id: target,
+      name: target.slice(CONFIGURED_AGENT_ASSIGNEE_PREFIX.length),
+      avatarUrl: null,
+    };
+  }
   if (actor.type !== "user") {
     throw new ApiError(400, "INVALID_FIELD", "'current-user' requires a user request identity");
   }
